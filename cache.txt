@@ -4040,5 +4040,303 @@
             "Module": "Rule",
             "Description": "Suppress excessive PH_REPORT_PACK_FAILED events."
         }
+    ],
+    "6.6.1": [
+        {
+            "Bug ID": "835978",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "After the 6.5.0 upgrade, Custom rules defined for specific Orgs need to be re-enabled for them to trigger."
+        },
+        {
+            "Bug ID": "831456",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "When there is a very large number of Malware IOCs (~2 Million), then upgrade may fail due to Java out of memory. App Server restart may also fail for the same reason."
+        },
+        {
+            "Bug ID": "824607",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Incidents may not show after 6.5.0 upgrade, when there are Low severity Incidents."
+        },
+        {
+            "Bug ID": "838600",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Device name change does not take effect on collectors, other than the one that discovers and monitors the device."
+        },
+        {
+            "Bug ID": "830438",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Incidents may trigger from 'System Collector Event Delayed' Rule despite events being received."
+        },
+        {
+            "Bug ID": "825752",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Malware Domain update does not work with AlienVault."
+        },
+        {
+            "Bug ID": "821197",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Retention policy table still contains references from a deleted Organization after an organization is deleted."
+        },
+        {
+            "Bug ID": "825764",
+            "Severity": "Minor",
+            "Module": "App Server, Query",
+            "Description": "For a large event archive database in NFS, query on one Org may result in timeout because all Org directories are scanned."
+        },
+        {
+            "Bug ID": "835339",
+            "Severity": "Minor",
+            "Module": "App Server, Rule Engine",
+            "Description": "Security Incidents triggering from custom rules may be cleared by system."
+        },
+        {
+            "Bug ID": "729023",
+            "Severity": "Minor",
+            "Module": "App Server, ClickHouse",
+            "Description": "SQLite header and source version mismatch causes upgrade failure."
+        },
+        {
+            "Bug ID": "837950",
+            "Severity": "Minor",
+            "Module": "ClickHouse",
+            "Description": "If supervisor IP changes after ClickHouse has been configured,IP updates to ClickHouse does not occur."
+        },
+        {
+            "Bug ID": "821110",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "CrowdStrike Falcon Data Replicator is unable to ingest logs due to unzipping incomplete package."
+        },
+        {
+            "Bug ID": "829644",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Admin Health Collector Health page hangs when sorting by organization."
+        },
+        {
+            "Bug ID": "826450",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Unable to validate or save a cloned system parser that contains '&amp;' character."
+        },
+        {
+            "Bug ID": "825383",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Unable to export configurations of FortiGate device from CMDB."
+        },
+        {
+            "Bug ID": "825068",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "In HTTP(S) notification, protocol https is incorrectly parsed as https: which causes request to default to http."
+        },
+        {
+            "Bug ID": "827264",
+            "Severity": "Minor",
+            "Module": "Query Engine",
+            "Description": "Query using IN operator doesn't return proper results when name contains '-'."
+        },
+        {
+            "Bug ID": "833618",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Missing dos2unix package causes config discoveries to fail in some devices (h3c)."
+        },
+        {
+            "Bug ID": "833411",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "On hardware appliances, \"execute shutdown\" command may sometime fail when run repeatedly."
+        },
+        {
+            "Bug ID": "823098",
+            "Severity": "Enhancement",
+            "Module": "Data",
+            "Description": "Checkpoint device is discovered as Linux since Checkpoint sysObjectID are not built in. Workaround is to define them from GUI."
+        }
+    ],
+    "6.5.1": [
+        {
+            "Bug ID": "835978",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "After the 6.5.0 upgrade, custom rules defined for specific Orgs need to be re-enabled for them to trigger."
+        },
+        {
+            "Bug ID": "831456",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "When there is a very large number of Malware IOCs (~2 Million), then upgrade may fail due to Java out of memory. App Server restart may also fail for the same reason."
+        },
+        {
+            "Bug ID": "824607",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Incidents may not show after 6.5.0 upgrade, when there are Low severity Incidents."
+        },
+        {
+            "Bug ID": "821804",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "AppSvr restart may show heap errors and it is not fixed by re-deploying."
+        },
+        {
+            "Bug ID": "838600",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Device name change does not take effect on collectors, other than the one that discovers and monitors the device."
+        },
+        {
+            "Bug ID": "830438",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Incidents may trigger from 'System Collector Event Delayed' rule despite events being received."
+        },
+        {
+            "Bug ID": "825752",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Malware Domain update does not work with AlienVault."
+        },
+        {
+            "Bug ID": "821197",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Retention policy table still contains references from a deleted Organization after an organization is deleted."
+        },
+        {
+            "Bug ID": "816492",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Opensaml library conflict causes OKTA authentication portal failed login."
+        },
+        {
+            "Bug ID": "815030",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Update Glassfish CA Certificate store with Java CA cert store."
+        },
+        {
+            "Bug ID": "825764",
+            "Severity": "Minor",
+            "Module": "App Server, Query",
+            "Description": "For a large event archive database in NFS, query on one Org may result in timeout because all Org directories are scanned."
+        },
+        {
+            "Bug ID": "835339",
+            "Severity": "Minor",
+            "Module": "App Server, Rule Engine",
+            "Description": "Security Incidents triggering from custom rules may be cleared by system."
+        },
+        {
+            "Bug ID": "729023",
+            "Severity": "Minor",
+            "Module": "App Server, ClickHouse",
+            "Description": "SQLite header and source version mismatch causes upgrade failure."
+        },
+        {
+            "Bug ID": "837950",
+            "Severity": "Minor",
+            "Module": "ClickHouse",
+            "Description": "If supervisor IPchanges after ClickHouse has been configured, IP updates to ClickHouse does not occur."
+        },
+        {
+            "Bug ID": "821110",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "CrowdStrike Falcon Data Replicator is unable to ingest logs due to unzipping incomplete package."
+        },
+        {
+            "Bug ID": "818548",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "AWS Kinesis log collection may fail due to sync shards and leases on connection."
+        },
+        {
+            "Bug ID": "817081",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "AWS Kinesis Event pull may fail caused by small buffer size."
+        },
+        {
+            "Bug ID": "829644",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Admin Health Collector Health page hangs when sorting by organization."
+        },
+        {
+            "Bug ID": "826450",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Unable to validate or save a cloned system parser that contains '&amp;' character."
+        },
+        {
+            "Bug ID": "825383",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Unable to export configurations of FortiGate device from CMDB."
+        },
+        {
+            "Bug ID": "825068",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "In HTTP(S) notification, protocol https is incorrectly parsed as https: which causes request to default to http."
+        },
+        {
+            "Bug ID": "814430",
+            "Severity": "Minor",
+            "Module": "GUI-Admin",
+            "Description": "The username field at user creation does not allow dot character."
+        },
+        {
+            "Bug ID": "819517",
+            "Severity": "Minor",
+            "Module": "H5_Admin",
+            "Description": "Searching for specific collector returns multiple pages of results."
+        },
+        {
+            "Bug ID": "822029",
+            "Severity": "Minor",
+            "Module": "Parser",
+            "Description": "Reduce the scope of logon and logoff events to UEBA AI engine to reduce pressure on AI engine."
+        },
+        {
+            "Bug ID": "827264",
+            "Severity": "Minor",
+            "Module": "Query Engine",
+            "Description": "Query using IN operator doesn't return proper results when name contains '-'."
+        },
+        {
+            "Bug ID": "833618",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Missing dos2unix package causes config discoveries to fail in some devices (h3c)."
+        },
+        {
+            "Bug ID": "833411",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "On hardware appliances, \"execute shutdown\" command may sometime fail when run repeatedly."
+        },
+        {
+            "Bug ID": "825072",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Cloud Health Calculation of Disk I/O Read and Write Wait times are wrong."
+        },
+        {
+            "Bug ID": "823098",
+            "Severity": "Enhancement",
+            "Module": "Data",
+            "Description": "Checkpoint device is discovered as Linux since Checkpoint sysObjectID are not built in. Workaround is to define them from GUI."
+        }
     ]
 }
