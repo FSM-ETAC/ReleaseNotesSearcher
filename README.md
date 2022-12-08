@@ -1,5 +1,5 @@
 # Getting Started
-This program searches for known bugs from the FortiSIEM releases notes using keywords. It will build a cache, if not present, when running for the first time which allows all subsequent searches to be faster and offline.
+This program searches for fixed bugs from the FortiSIEM releases notes using keywords. It will build a cache, if not present, when running for the first time which allows all subsequent searches to be faster and offline.
 
 ## Requirements
 Python 3.6 and higher.
