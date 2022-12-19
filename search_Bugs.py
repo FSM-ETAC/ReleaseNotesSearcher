@@ -286,7 +286,7 @@ if urls is None:
     urls_timestamp = datetime.datetime.now(timezone.utc) 
     augmented_urls = {"Time" : urls_timestamp.isoformat(),  "URLs Data" : urls}
 else:
-    tmp = {key: val for key, val in sorted(DEFAULT_URLS.items(), key = lambda x: x[0], reverse = True)}
+    tmp = {key: val for key, val in sorted(urls.items(), key = lambda x: x[0], reverse = True)}
     urls = tmp
 
 # Shall we output the URLs file (json)?
