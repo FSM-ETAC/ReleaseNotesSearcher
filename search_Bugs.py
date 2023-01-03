@@ -1,8 +1,10 @@
-#! /usr/bin/python3
+#! python3
 # Date Created: 05/16/2022
 # Purpose: To search the release notes for known bugs using keywords
 #
 # Version History
+# 2.2       2022-12-16      amm     Automatically flush local cache if server URLs list is newer; improved cache error handling
+# 2.1.1     2022-12-16      amm     Fixed bug in remote URLs list processing
 # 2.1       2022-11-30      amm     Testing, usability, polish
 # 2.0       2022-11-23     amm       Remote release notes list
 # 1.1       2022-11-22      JC     Added recent releases
@@ -11,14 +13,15 @@
 import json
 import re
 import os
+from os.path import abspath
 import sys
 import errno        # For Linux-consistent exit codes
 import argparse
 import datetime
-from datetime import timezone
 import urllib.request
 import urllib.response
 import urllib.error
+from inspect import getsourcefile
 
 #############################################################
 #
@@ -26,8 +29,24 @@ import urllib.error
 #
 #############################################################
 
-OUR_VERSION="2.1 *DEV*"
+OUR_VERSION="2.2"
 PYTHON_MIN_VERSION = 3      # We need Python 3 or later
+PYTHON_MIN_MINOR_VERSION = 9    # We need Python 3.9 or later
+
+
+# Which version of Python is running us? We need at least Python 3.9
+if sys.version_info.major < PYTHON_MIN_VERSION:
+    print("You need to use Python %d or newer for this tool; you're running %s" %
+        (PYTHON_MIN_VERSION,  sys.version), file=sys.stderr)
+    exit(errno.EINVAL)
+else:
+    if sys.version_info.major == PYTHON_MIN_VERSION:
+        if sys.version_info.minor < PYTHON_MIN_MINOR_VERSION:
+            print("You need to use Python %d.%d or newer for this tool; you're running %s" %
+                (PYTHON_MIN_VERSION, PYTHON_MIN_MINOR_VERSION,  sys.version),  file=sys.stderr)
+            exit(errno.EINVAL)
+
+import zoneinfo     # Introduced in Python 3.9
 
 #
 # Order in the following dictionary does not matter. We sort (reverse) after we get everything
@@ -52,6 +71,7 @@ DEFAULT_URLS = {
     "6.1.0" : "https://docs.fortinet.com/document/fortisiem/6.1.0/release-notes/441737/whats-new-in-6-1-0#What's_New_in_6.1.0"
 }
 
+
 DEFAULT_URLS_HOST = "raw.githubusercontent.com"
 DEFAULT_URLS_PATH = "FSM-ETAC/ReleaseNotesSearcher/main"
 DEFAULT_URLS_FILE = "search_Bugs_URLs.json"
@@ -61,13 +81,20 @@ DEFAULT_URLS_URI = "https://" + DEFAULT_URLS_HOST + "/" + DEFAULT_URLS_PATH + "/
 DEFAULT_CACHE_FILE = "cache.json"
 DEFAULT_METADATA_FILE = "cache_metadata.json"
 
+CACHE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
+CACHE_DATE_FORMAT_ALT = "%Y-%m-%dT%H:%M:%S.%f"  # On the off chance that the datetime being parsed has no TZ info
+BRESHIT = datetime.datetime(1,  1,  1,  0,  0,  0,  0, zoneinfo.ZoneInfo("GMT"))
+
 # XXX With proper abstraction, this will be hidden inside the class definition.
-cache_info = {  "dataFile" : DEFAULT_CACHE_FILE,    # Name of our cache file
-                "dataDate" : None,          # Date our cache file was last updated
-                "URLsFile" : DEFAULT_URLS_FILE,   # Name of the Release Notes info cache file
-                "URLsDate" : None,          # Date our Release Notes info cache file was last updated
-                "URLsURI" : DEFAULT_URLS_URI,
-                "CacheMetaData" : DEFAULT_METADATA_FILE}  # URI for the Release Notes info
+cache_info = {
+    "dataFile" : DEFAULT_CACHE_FILE,    # Name of our cache file
+    "dataDate" : None,          # Date our cache file was last updated
+    "URLsFile" : DEFAULT_URLS_FILE,   # Name of the Release Notes info cache file
+    "URLsDate" : None,          # Date our Release Notes info cache file was last updated
+    "URLsURI" : DEFAULT_URLS_URI,   # URI for the Release Notes info
+    "CacheMetaData" : DEFAULT_METADATA_FILE,
+    "DateFormat" : CACHE_DATE_FORMAT # Format for the datetime strings
+}
 
 class extract:
     @staticmethod
@@ -79,26 +106,106 @@ class extract:
         return mystr
 
     @staticmethod
-    def get_cache(data_file):
-        # Open cache file and return it as a dictionary
-        with open(data_file) as f:
+    def get_cache(cache_info, remote_timestamp):
+        # Open cache file, validate currency, and return it as a dictionary
+        metadata_file = cache_info["CacheMetaData"]
+        data_file = cache_info["dataFile"]
+        try:
+            with open(metadata_file) as mdf:
+                try:
+                    metadata = json.load(mdf)
+                except json.decoder.JSONDecodeError:
+                    print("Warning: local cache metadata (%s) has invalid format;" % metadata_file,  file=sys.stderr)
+                    print("regenerating cache.",  file=sys.stderr)
+                    metadata = None
+                except:
+                    print("Got unexpected error in json.load of metadata file %s" % data_file,  file=sys.stderr)
+                    metadata = None
+        except PermissionError:
+            print("Permission error reading cache metadata file (%s)" % metadata_file,  file=sys.stderr)
+            metadata = None
+        except FileNotFoundError:
+            metadata = None
+        try:
+            with open(data_file) as f:
+                try:
+                    data = json.load(f)
+                except json.decoder.JSONDecodeError:
+                    print("Warning: local cache (%s) has invalid format;" % data_file,  file=sys.stderr)
+                    print("regenerating cache.",  file=sys.stderr)
+                    data = None
+                except:
+                    print("Encountered an unexpected error in json.load of data file %s" % data_file,  file=sys.stderr)
+                    data = None
+        except PermissionError:
+            print("Permission error reading cache file (%s)" % data_file,  file=sys.stderr)
+            data = None
+        except FileNotFoundError:
+            data = None
+        
+        if type(metadata) == "list":
+            metadata = metadata[0]      # Old caches made metadata an array of a dictionary
+        if metadata is not None:
+            if "DateFormat" in cache_info:
+                cacheDateFormat = cache_info["DateFormat"]
+            else:
+                cacheDateFormat = CACHE_DATE_FORMAT
             try:
-                data = json.load(f)
-            except json.decoder.JSONDecodeError:
-                print("Warning: local cache (%s) has invalid format;" % data_file,  file=sys.stderr)
-                print("regenerating cache.",  file=sys.stderr)
-                data = None
-        return data
+                cache_timestamp = datetime.datetime.strptime(metadata["dataDate"],  cacheDateFormat)
+            except ValueError:
+                try:
+                    tmp = datetime.datetime.strptime(metadata["dataDate"],  CACHE_DATE_FORMAT_ALT)
+                    cache_timestamp = tmp.replace(tzinfo=zoneinfo.ZoneInfo("GMT"))
+                except Exception as e:
+                    print("Warning: could not parse cache's timestamp (%s)" % metadata["dataDate"], file=sys.stderr)
+                    print("\tRecommend flushing caches\n", file=sys.stderr)
+                    print("\tGeek debugging info: exception was %s" % e)
+                    cache_timestamp = datetime.datetime.now(zoneinfo.ZoneInfo("GMT"))        # Need to use this instead of utcnow() to get a tz-aware datetime.
+        else:
+            cache_timestamp = BRESHIT
+
+        # XXX
+        # This cache management should be fully hidden within a cache abstraction. There might be a better place for it,
+        # even with the current cache management scheme.
+        # XXX
+
+        # Is the cache older than the URLs timestamp? If so, invalidate it. This ensures that the cache is updated
+        # if the URLs list is updated.
+        # urls_timestamp is either the relevant timestamp info from the metadata file, if we're using the server's
+        # URLs list, or the modification time of this program file.
+
+        if cache_timestamp < remote_timestamp:  # Cache is obsolete
+            extract.flush_caches(cache_info)
+            allData = None
+        else:
+            allData = {
+                "metadata" : metadata,
+                "data" : data
+            }
+        return allData
 
     @staticmethod
     def flush_caches(caches_info):
         # The purpose is to remove the cache. So, if there's no cache, we don't care: it's deemed removed.
-        if os.path.isfile(caches_info["dataFile"]):
-            os.remove(caches_info["dataFile"])
+        # However, we still need to handle permission problems!
+        try:
+            if os.path.isfile(caches_info["dataFile"]):
+                os.remove(caches_info["dataFile"])
+        except PermissionError:
+            print("No permission to remove data cache %s" % caches_info["dataFile"],  file=sys.stderr)
+        except Exception as e:
+            print("Error (%s) attempting to flush data cache %s" % (e, caches_info["dataFile"]), file=sys.stderr)
         caches_info["dataDate"] = None
-        if os.path.isfile(caches_info["URLsFile"]):
-            os.remove(caches_info["URLsFile"])
-        caches_info["URLsDate"] = None
+
+        try:
+            if os.path.isfile(caches_info["CacheMetaData"]):
+                os.remove(caches_info["CacheMetaData"])
+        except PermissionError:
+            print("No permission to remove metadata cache %s" % caches_info["CacheMetaData"],  file=sys.stderr)
+        except Exception as e:
+            print("Error (%s) attempting to flush metadata cache %s" % (e, caches_info["CacheMetaData"]), file=sys.stderr)
+        caches_info["dataDate"] = None
+        caches_info["CacheMetaData"] = None
 
     @staticmethod
     def get_data(data, version):
@@ -185,11 +292,27 @@ class load():
     @staticmethod
     def write_file(parsed_data):
         # Opens new or overwrites current cache file and writes the list of dictionaries (bugs) into it.
-        with open(cache_info["dataFile"], "w") as json_Cache:
-            json_Cache.write(json.dumps(parsed_data, indent=4))
-        cache_info["dataDate"] = datetime.datetime.utcnow().isoformat()    # There's no JSON serializer for datetime
-        with open(cache_info["CacheMetaData"],  "w") as metaDataCache:
-            metaDataCache.write(json.dumps([cache_info],  indent=4))
+
+        if cache_info["dataFile"] == None:
+            cache_info["dataFile"] = DEFAULT_CACHE_FILE
+        if cache_info["CacheMetaData"] == None:
+            cache_info["CacheMetaData"] = DEFAULT_METADATA_FILE
+
+        try:
+            with open(cache_info["dataFile"], "w") as json_Cache:
+                json_Cache.write(json.dumps(parsed_data, indent=4))
+            cache_info["dataDate"] = datetime.datetime.utcnow().isoformat()    # There's no JSON serializer for datetime
+            cache_info["URLsDate"] = urls_timestamp_stg
+        except PermissionError:
+            print("Permission error writing cache file (%s)" % cache_info["dataFile"],  file=sys.stderr)
+            return False
+        try:
+            with open(cache_info["CacheMetaData"],  "w") as metaDataCache:
+                metaDataCache.write(json.dumps(cache_info,  indent=4))
+        except PermissionError:
+            print("Permission error writing metadata file (%s)" % cache_info["CacheMetaData"],  file=sys.stderr)
+            return False
+        return True
 
     def print_found(results):
         # Prints search results in a formatted table.
@@ -221,13 +344,9 @@ def processArgs():
         argParser.add_argument("-k", "--keyword",  nargs=1,  default=None, help="Keyword to find")
     else:
         argParser.add_argument("-k", "--keyword", nargs=1, action="extend", default=None, help="Keyword to find")
-    argParser.add_argument("--version", action="version", version="%(prog)s version " + OUR_VERSION)
+    argParser.add_argument("--version", action="version", version="%(prog)s Version " + OUR_VERSION +
+        " (Python %d.%d.%d)" % (sys.version_info.major, sys.version_info.minor, sys.version_info.micro),  help="Report the version of this program")
     return argParser.parse_args()
-
-# Which version of Python is running us? We need at least Python 3.
-if sys.version_info.major < PYTHON_MIN_VERSION:
-    print("You need to use Python 3 or newer for this tool")
-    exit(errno.ENOPKG)
 
 return_code = 0
 
@@ -236,7 +355,7 @@ args = processArgs()
 # Does the user want to flush the caches?
 if args.flush:
     extract.flush_caches(cache_info)
-    print("Cache flushed, per request")
+    print("Caches flushed, per request")
     # XXX Semantic question: should -f alone on the CLI exit, or should we enter the read-execute loop and
     # ask the user for input, as if we'd had no CLI args? For now, we'll continue into the read-execute loop
 
@@ -244,8 +363,7 @@ if args.flush:
 if args.check_caches:
     # The data cache is deemed current if it's no older than the Release Notes info data (i.e., the URLs)
     print("Cache currency check not yet implemented")  # XXX
-
-
+    
 # args.urls_uri has the URI of our URLs database (json). Attempt to read from there. If we can't, we'll use
 # the default (DEFAULT_URLS).
 urls_uri = args.urls_uri[0]
@@ -253,7 +371,7 @@ urls = None
 try:
     urlFile = urllib.request.urlopen(urls_uri)
     augmented_urls = json.loads(urlFile.read())
-    urls_timestamp = augmented_urls["Time"]
+    urls_timestamp_stg = augmented_urls["Time"]
     urls = augmented_urls["URLs Data"]
 except urllib.error.HTTPError as err:   # We got some kind of HTTP error.
     if 404 == err.code:     # 404: target URI not found.
@@ -283,7 +401,8 @@ except:         # Let's cover everything with a catch-all.
 if urls is None:
     # Sort the URLs by descending key.
     urls = {key: val for key, val in sorted(DEFAULT_URLS.items(), key = lambda x: x[0], reverse = True)}
-    urls_timestamp = datetime.datetime.now(timezone.utc) 
+    ourFile = abspath(getsourcefile(lambda:0))
+    urls_timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(ourFile))
     augmented_urls = {"Time" : urls_timestamp.isoformat(),  "URLs Data" : urls}
 else:
     tmp = {key: val for key, val in sorted(urls.items(), key = lambda x: x[0], reverse = True)}
@@ -293,7 +412,7 @@ else:
 if args.generateURLsFile:
     print(json.dumps(augmented_urls, indent=4))
     exit(0)
-    
+
 # Get our list of versions. We will need some of this, might need the rest, later, easier just to generate it now.
 versions_list = list(urls.keys())
 versions_string = " ".join(versions_list)
@@ -322,6 +441,9 @@ while True:
         except EOFError:
             print("Exiting per EOF")
             exit(return_code)
+        except KeyboardInterrupt:
+            print("Received keyboard interrupt, exiting")
+            exit(errno.EINTR)
         if "" == keyword or keyword.lower() == "quit" or keyword.lower() == "q":
             print("Exiting per request")
             exit(return_code)
@@ -370,11 +492,21 @@ while True:
     else:       # We have a valid, known version. Look for the fixed bugs.
         version_index = versions_list.index(oldest_version)
         relevant_versions = versions_list[0:version_index+1]
+        cached_data = None
         file_data = None
-        if os.path.exists(cache_info["dataFile"]) == True:     # Cache there? If so, try to use it
-            file_data = extract.get_cache(cache_info["dataFile"])
-            if file_data is None:
-                return_code = errno.EBADF
+        caught_error = False
+        try:
+            cached_data = extract.get_cache(cache_info, datetime.datetime.strptime(urls_timestamp_stg, cache_info["DateFormat"]))   # Get the locally-cached data
+        except:
+            print("Unable to parse timestamp %s (used %s)" % (urls_timestamp_stg, cache_info["DateFormat"]), file=sys.stderr)
+            print("Using local URIs data")
+            cached_data = None
+        if cached_data is None:
+            return_code = errno.EBADF
+            file_data = None
+        else:
+            metadata = cached_data["metadata"]
+            file_data = cached_data["data"]
         if file_data is not None:
             for v in relevant_versions:
                 if urls[v] is None:
@@ -396,7 +528,9 @@ while True:
                         else:
                             print("No matching fixed bugs found in %s release notes\n" % v)
 
-            load.write_file(file_data)
+            if not load.write_file(file_data):
+                print("Caching error; check other messages, check file permissions and ownership", file=sys.stderr)
+                return_code = errno.EBADF
 
         else:       # No valid cache; build it.
             # Note that we build the cache file incrementally. If the user doesn't ask for fixes in version x.y.z,
@@ -413,6 +547,8 @@ while True:
                     else:
                         print("No matching fixed bugs found in %s releases notes\n" %v)
 
-                    load.write_file(file_data)
+                    if not load.write_file(file_data):
+                        print("Caching error; check other messages, check file permissions and ownership",  file=sys.stderr)
+                        return_code = errno.EBADF
     if not interactive[0]:
         exit(return_code)
