@@ -3,12 +3,13 @@
 # Purpose: To search the release notes for known bugs using keywords
 #
 # Version History
+# 2.2.1     2023-02-21      JC      Added additional parsing for 6.7.1 data.
 # 2.2       2022-12-16      amm     Automatically flush local cache if server URLs list is newer; improved cache error handling
 # 2.1.1     2022-12-16      amm     Fixed bug in remote URLs list processing
 # 2.1       2022-11-30      amm     Testing, usability, polish
-# 2.0       2022-11-23     amm       Remote release notes list
-# 1.1       2022-11-22      JC     Added recent releases
-# 1.0       2022-05-16      JC     Initial version
+# 2.0       2022-11-23      amm     Remote release notes list
+# 1.1       2022-11-22      JC      Added recent releases
+# 1.0       2022-05-16      JC      Initial version
 
 import json
 import re
@@ -29,7 +30,7 @@ from inspect import getsourcefile
 #
 #############################################################
 
-OUR_VERSION="2.2"
+OUR_VERSION="2.2.1"
 PYTHON_MIN_VERSION = 3      # We need Python 3 or later
 PYTHON_MIN_MINOR_VERSION = 9    # We need Python 3.9 or later
 
@@ -53,6 +54,7 @@ import zoneinfo     # Introduced in Python 3.9
 # read and set, below.
 #
 DEFAULT_URLS = {
+    "6.7.1" : "https://docs.fortinet.com/document/fortisiem/6.7.1/release-notes/148168/whats-new-in-6-7-1",
     "6.6.2" : None,
     "6.6.1" : "https://docs.fortinet.com/document/fortisiem/6.6.1/release-notes/267436/whats-new-in-6-6-1",
     "6.6.0" : "https://docs.fortinet.com/document/fortisiem/6.6.0/release-notes/709914/whats-new-in-6-6-0",
@@ -231,8 +233,7 @@ class transform:
         index_start = re.search("<p>\d{6}</p>|\">\d{6}</td>", data).start()
         index_end = re.search(".*  </td>\r\n.*</tr>\r\n.*</tbody>", data).start()
         short_data = data[index_start:index_end-1]
-        values = re.findall("<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>.*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>", short_data)
-
+        values = re.findall("<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>[A-Za-z0-9].*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>|System</td>", short_data)
         if version == "6.3.1":
             values.insert(3, "<p>In AD User Discovery, the Last Login Value was incorrect if the user was not set (did not log in) to the AD Server.</p>")
         cleaned_values = list()
@@ -241,7 +242,7 @@ class transform:
             bug_list = list()
             for i in range(x, x+4):
                 val = values[i]
-                for ch in ["<p>", "</p>", "\r\n", "<code>", "</code>", "&nbsp;", "<b>", "</b>", "&gt;"]:
+                for ch in ["<p>", "</p>", "\r\n", "<code>", "</code>", "&nbsp;", "<b>", "</b>", "&gt;", "</td>"]:
                     if ch in val:
                         val = val.replace(ch,"")
                 spaces_cleaned = ' '.join(val.split())
@@ -397,16 +398,18 @@ except:         # Let's cover everything with a catch-all.
     print("Unexpected error reading Release Notes locations file at %s; using default info" % urls_uri, file=sys.stderr)
     return_code = errno.EFAULT
     urls = None
-    
+
 if urls is None:
     # Sort the URLs by descending key.
     urls = {key: val for key, val in sorted(DEFAULT_URLS.items(), key = lambda x: x[0], reverse = True)}
     ourFile = abspath(getsourcefile(lambda:0))
     urls_timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(ourFile))
     augmented_urls = {"Time" : urls_timestamp.isoformat(),  "URLs Data" : urls}
+    
 else:
     tmp = {key: val for key, val in sorted(urls.items(), key = lambda x: x[0], reverse = True)}
     urls = tmp
+
 
 # Shall we output the URLs file (json)?
 if args.generateURLsFile:
