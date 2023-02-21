@@ -3,6 +3,7 @@ This program searches for fixed bugs from the FortiSIEM releases notes using key
 
 ## Requirements
 Python 3.6 and higher.
+
 tzdata (python package). To install, run: pip install tzdata
 
 ## Installation
