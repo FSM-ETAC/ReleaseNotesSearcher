@@ -233,7 +233,7 @@ class transform:
         index_start = re.search("<p>\d{6}</p>|\">\d{6}</td>", data).start()
         index_end = re.search(".*  </td>\r\n.*</tr>\r\n.*</tbody>", data).start()
         short_data = data[index_start:index_end-1]
-        values = re.findall("<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>[A-Za-z0-9].*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>|System</td>", short_data)
+        values = re.findall("</a>[0-9].*</p>|<p>For(?:.*\n)*.*workaround.</p>|<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>[A-Za-z0-9].*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p><code>.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>|System</td>|<p>(?:Data|Sometimes).*\n.*\n.*\n.*</p>|<p>..[A-Za-z].*</p>", short_data)
         if version == "6.3.1":
             values.insert(3, "<p>In AD User Discovery, the Last Login Value was incorrect if the user was not set (did not log in) to the AD Server.</p>")
         cleaned_values = list()
