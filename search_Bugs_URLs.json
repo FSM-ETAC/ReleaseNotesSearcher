@@ -1,6 +1,7 @@
 {
-    "Time": "2023-02-18T00:02:18.667742+00:00",
+    "Time": "2023-03-08T21:14:18.667742+00:00",
     "URLs Data": {
+        "6.7.2" : "https://docs.fortinet.com/document/fortisiem/6.7.2/release-notes/561284/whats-new-in-6-7-2",
         "6.7.1" : "https://docs.fortinet.com/document/fortisiem/6.7.1/release-notes/148168/whats-new-in-6-7-1",
         "6.7.0": "https://docs.fortinet.com/document/fortisiem/6.7.0/release-notes/18952/whats-new-in-6-7-0",
         "6.6.3": "https://docs.fortinet.com/document/fortisiem/6.6.3/release-notes/708896/whats-new-in-6-6-3",
