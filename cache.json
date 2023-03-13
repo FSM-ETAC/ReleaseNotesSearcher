@@ -1,4 +1,335 @@
 {
+    "6.7.2": [
+        {
+            "Bug ID": "886916",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Windows Active Directory discovery may take a long time for large numbers of users."
+        },
+        {
+            "Bug ID": "885349",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "FortiGuard Malware URL entries with special characters may create exceptions, which fills up disk and supervisor may stop."
+        },
+        {
+            "Bug ID": "885311",
+            "Severity": "Major",
+            "Module": "System",
+            "Description": "A FortiSIEM node may stop working because of mod_security log filling up the root disk."
+        },
+        {
+            "Bug ID": "887387",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Delete/Edit CMDB Windows Active Directory User groups with large number of users may fail with Undefined error."
+        },
+        {
+            "Bug ID": "880937",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "After Content Update and Regular Upgrade, Parser order may change unexpectedly, when customer has user defined parsers."
+        },
+        {
+            "Bug ID": "886207",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "Salesforce events are not pulled when session IDis expired."
+        },
+        {
+            "Bug ID": "880373",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agents",
+            "Description": "Crowdstrike API may stop event polling after a certain amount of time."
+        },
+        {
+            "Bug ID": "877946",
+            "Severity": "Minor",
+            "Module": "Linux Agent",
+            "Description": "Linux Agent discovery method is LOG + AGENT, instead of only AGENT."
+        },
+        {
+            "Bug ID": "888896",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Collector upgrade may fail if user patched security vulnerabilities on the Collector by running 'yum upgrade'."
+        },
+        {
+            "Bug ID": "887159",
+            "Severity": "Minor",
+            "Module": "Windows Agent",
+            "Description": "After enabling UEBA for Windows agent , syslog method will added to the CMDB Devices Monitor tab."
+        }
+    ],
+    "6.7.1": [
+        {
+            "Bug ID": "882706",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Windows or Linux agent image upgrade may not work in Active-Active Supervisor Cluster setup."
+        },
+        {
+            "Bug ID": "881856",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Content update may not work for Follower and Worker in Active-Active Supervisor Cluster setup."
+        },
+        {
+            "Bug ID": "869378",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Incidents cannot be searched from FortiSIEM Manager."
+        },
+        {
+            "Bug ID": "882317",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "For ServiceNow integration in Service Provider scenario, Organization mapping with mixed case will result in empty organization field in ServiceNow Incidents."
+        },
+        {
+            "Bug ID": "874046",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "After upgrading from 6.6.0 to 6.7.0, Content update version shows the available versions in 6.6.0. It is a display cache issue and older versions are never imported."
+        },
+        {
+            "Bug ID": "867468",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "If you register Supervisor to FortiSIEM Manager, and add a Follower node, then 'FortiSIEM super cluster FQDN/IP' shows blank on Supervisor and Follower UI."
+        },
+        {
+            "Bug ID": "876301",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Queries from the ANALYTICS Shortcut report folder may not apply the right values in the Filter field."
+        },
+        {
+            "Bug ID": "873203",
+            "Severity": "Minor",
+            "Module": "Query",
+            "Description": "QueryMaster crashes when lookup table schema uses a column that has the same name as an event attribute."
+        },
+        {
+            "Bug ID": "880604",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Sometimes, ClickHouse does not start after machine reboot."
+        },
+        {
+            "Bug ID": "870202",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "In a Disaster Recovery (DR) Environment , queries may fail because Secondary worker doesn't get correct redis password during DR setup."
+        },
+        {
+            "Bug ID": "867999",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Changing the Supervisor IP address using configFSM.sh will cause svn_url to change to repos/cmdb/."
+        },
+        {
+            "Bug ID": "876509",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "AWS deployments need to utilize AWS NTP servers."
+        },
+        {
+            "Bug ID": "874179",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "Provide a method to backup and restore ClickHouse event data from command line."
+        },
+        {
+            "Bug ID": "870006",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "Allow removal of more than one ClickHouse Keeper nodes from GUI (needed for DR)."
+        },
+        {
+            "Bug ID": "868464",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "Enhance the EventDB to ClickHouse event import tool to map event org in EventDB to another org in ClickHouse."
+        },
+        {
+            "Bug ID": "829791",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "Enable verbose output for ansible while upgrading."
+        }
+    ],
+    "6.7.0": [],
+    "6.6.3": [
+        {
+            "Bug ID": "861196",
+            "Severity": "Major",
+            "Module": "AI module",
+            "Description": "phFortiInsightAI module may consume high CPU on Workers from excessive Windows logon events containing machine accounts ending with $."
+        },
+        {
+            "Bug ID": "859950, 858445",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Rule evaluation is slow when filter condition uses individual Malware and Country Group Items."
+        },
+        {
+            "Bug ID": "854349",
+            "Severity": "Major",
+            "Module": "App Server",
+            "Description": "Malware hash update from large 100K line CSV file causes App Server CPU to go 90%."
+        },
+        {
+            "Bug ID": "857967, 857550",
+            "Severity": "Major",
+            "Module": "Rule",
+            "Description": "RuleWorker pauses when there is a rule change and App Server is busy."
+        },
+        {
+            "Bug ID": "862538",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Test rule does not work for approved devices that are in orgs."
+        },
+        {
+            "Bug ID": "861554",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Custom rules for Org trigger incidents even if they are disabled for that Org."
+        },
+        {
+            "Bug ID": "860517",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "SQL Injection vulnerability in CMDB Report Display fields."
+        },
+        {
+            "Bug ID": "858787",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Device usage counts incorrectly in enterprise environment after the upgrade from 6.4.0 to 6.6.2."
+        },
+        {
+            "Bug ID": "858459",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "App Server may generate excessive 6.4.0 false positive Collector Down events."
+        },
+        {
+            "Bug ID": "857944",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "OKTA Authentication redirects to Flash UI."
+        },
+        {
+            "Bug ID": "851078",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Incident email notification may be slow when email is mis-configured."
+        },
+        {
+            "Bug ID": "851077",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Incident Queries by Incident ID may time out if there are lots of Incidents stored in PostGreSQL over a long period of time."
+        },
+        {
+            "Bug ID": "838600",
+            "Severity": "Minor",
+            "Module": "App Server",
+            "Description": "Device name change does not take effect on collectors that do not discover/monitor the device."
+        },
+        {
+            "Bug ID": "853819",
+            "Severity": "Minor",
+            "Module": "Data Purger",
+            "Description": "When the retention policy triggers, the archive data for CUSTOMER_1 contains other orgs data."
+        },
+        {
+            "Bug ID": "857192",
+            "Severity": "Minor",
+            "Module": "Discovery",
+            "Description": "LDAP user Discovery may hang under certain conditions."
+        },
+        {
+            "Bug ID": "866669",
+            "Severity": "Minor",
+            "Module": "ElasticSearch",
+            "Description": "Need to handle new roles for Elasticsearch 7.17 for Test and Save Elasticsearch storage."
+        },
+        {
+            "Bug ID": "854955",
+            "Severity": "Minor",
+            "Module": "Event Pulling",
+            "Description": "Tenable Security Center API does not work."
+        },
+        {
+            "Bug ID": "841669",
+            "Severity": "Minor",
+            "Module": "Event Pulling",
+            "Description": "WMI/OMI event pulling may lag behind in some cases."
+        },
+        {
+            "Bug ID": "862020",
+            "Severity": "Minor",
+            "Module": "Event Pulling Agent",
+            "Description": "Generic HTTPS Advanced Event Puller incorrectly sets lastPollTime window to local time instead of UTC."
+        },
+        {
+            "Bug ID": "859767",
+            "Severity": "Minor",
+            "Module": "GUI",
+            "Description": "Incorrect ES Org Bucket mapping from file occurs when 10 groups are used, and there are gaps in 50,001-50,010. GUI maps Group 50,011 to 50,000."
+        },
+        {
+            "Bug ID": "860571",
+            "Severity": "Minor",
+            "Module": "Query",
+            "Description": "PctChange function in Query fails on Clickhouse and phQueryMaster restarted."
+        },
+        {
+            "Bug ID": "866034",
+            "Severity": "Minor",
+            "Module": "Query (ClickHouse)",
+            "Description": "Destination IP IN Networks Group: Public DNS Servers will cause ClickHouse errors."
+        },
+        {
+            "Bug ID": "864290",
+            "Severity": "Minor",
+            "Module": "Query (Elasticsearch)",
+            "Description": "Queries for CMDB Groups under Resources Networks do not work."
+        },
+        {
+            "Bug ID": "867816",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "SSH to instance on GCP does not work."
+        },
+        {
+            "Bug ID": "844287",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "FortiSIEM upgrade does not backup network_param.json."
+        },
+        {
+            "Bug ID": "843361",
+            "Severity": "Minor",
+            "Module": "System",
+            "Description": "Collector stores certain REST API responses in files."
+        },
+        {
+            "Bug ID": "847099",
+            "Severity": "Enhancement",
+            "Module": "App Server",
+            "Description": "Enhance audit log to include device name/ip for all failed Device Outbound Integrations."
+        },
+        {
+            "Bug ID": "853031",
+            "Severity": "Enhancement",
+            "Module": "System",
+            "Description": "Collector should not connect to Internet during fresh install."
+        }
+    ],
     "6.6.1": [
         {
             "Bug ID": "835978",
@@ -1139,6 +1470,14 @@
             "Severity": "Enhancement",
             "Module": "System",
             "Description": "UDP port 6343 needs to be opened on all nodes for ingesting sFlow."
+        }
+    ],
+    "6.4.2": [
+        {
+            "Bug ID": "841669",
+            "Severity": "Minor",
+            "Module": "Event Pulling",
+            "Description": "WMI/OMI event pulling may lag behind in some cases."
         }
     ],
     "6.4.1": [
@@ -4338,23 +4677,5 @@
             "Module": "Parser",
             "Description": "O365 Event Type MS_OFFICE365_SecurityComplianceCenter_AlertTriggered is missing details."
         }
-    ],
-    "urls": {
-        "6.6.2": null,
-        "6.6.1": "https://docs.fortinet.com/document/fortisiem/6.6.1/release-notes/267436/whats-new-in-6-6-1",
-        "6.6.0": "https://docs.fortinet.com/document/fortisiem/6.6.0/release-notes/709914/whats-new-in-6-6-0",
-        "6.5.1": "https://docs.fortinet.com/document/fortisiem/6.5.1/release-notes/822785/whats-new-in-6-5-1",
-        "6.5.0": "https://docs.fortinet.com/document/fortisiem/6.5.0/release-notes/482665/whats-new-in-6-5-0",
-        "6.4.1": "https://docs.fortinet.com/document/fortisiem/6.4.1/release-notes/516901/whats-new-in-6-4-1",
-        "6.4.0": "https://docs.fortinet.com/document/fortisiem/6.4.0/release-notes/456886/whats-new-in-6-4-0",
-        "6.3.3": null,
-        "6.3.2": "https://docs.fortinet.com/document/fortisiem/6.3.2/release-notes/803208/whats-new-in-6-3-2",
-        "6.3.1": "https://docs.fortinet.com/document/fortisiem/6.3.1/release-notes/330225/whats-new-in-6-3-1",
-        "6.3.0": "https://docs.fortinet.com/document/fortisiem/6.3.0/release-notes/498610/whats-new-in-6-3-0",
-        "6.2.1": "https://docs.fortinet.com/document/fortisiem/6.2.1/release-notes/498610/whats-new-in-6-2-1",
-        "6.2.0": "https://docs.fortinet.com/document/fortisiem/6.2.0/release-notes/498610/new-features",
-        "6.1.2": null,
-        "6.1.1": "https://docs.fortinet.com/document/fortisiem/6.1.1/release-notes/965243/whats-new-in-6-1-1#What's_New_in_6.1.1",
-        "6.1.0": "https://docs.fortinet.com/document/fortisiem/6.1.0/release-notes/441737/whats-new-in-6-1-0#What's_New_in_6.1.0"
-    }
+    ]
 }
