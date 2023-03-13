@@ -3,7 +3,7 @@
 # Purpose: To search the release notes for known bugs using keywords
 #
 # Version History
-# 2.2.1     2023-02-21      JC      Added additional parsing for 6.7.1 data.
+# 2.2.2     2023-03-13      JC      Added additional parsing for 6.7.1 data.
 # 2.2       2022-12-16      amm     Automatically flush local cache if server URLs list is newer; improved cache error handling
 # 2.1.1     2022-12-16      amm     Fixed bug in remote URLs list processing
 # 2.1       2022-11-30      amm     Testing, usability, polish
@@ -30,7 +30,7 @@ from inspect import getsourcefile
 #
 #############################################################
 
-OUR_VERSION="2.2.1"
+OUR_VERSION="2.2.2"
 PYTHON_MIN_VERSION = 3      # We need Python 3 or later
 PYTHON_MIN_MINOR_VERSION = 9    # We need Python 3.9 or later
 
@@ -54,6 +54,7 @@ import zoneinfo     # Introduced in Python 3.9
 # read and set, below.
 #
 DEFAULT_URLS = {
+    "6.7.2" : "https://docs.fortinet.com/document/fortisiem/6.7.2/release-notes/561284/whats-new-in-6-7-2",
     "6.7.1" : "https://docs.fortinet.com/document/fortisiem/6.7.1/release-notes/148168/whats-new-in-6-7-1",
     "6.6.2" : None,
     "6.6.1" : "https://docs.fortinet.com/document/fortisiem/6.6.1/release-notes/267436/whats-new-in-6-6-1",
@@ -233,7 +234,11 @@ class transform:
         index_start = re.search("<p>\d{6}</p>|\">\d{6}</td>", data).start()
         index_end = re.search(".*  </td>\r\n.*</tr>\r\n.*</tbody>", data).start()
         short_data = data[index_start:index_end-1]
-        values = re.findall("</a>[0-9].*</p>|<p>For(?:.*\n)*.*workaround.</p>|<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>[A-Za-z0-9].*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p><code>.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>|System</td>|<p>(?:Data|Sometimes).*\n.*\n.*\n.*</p>|<p>..[A-Za-z].*</p>", short_data)
+        # Special case for 6.7.1 data parsing. Original regex was capturing "<p>&nbsp;</p>" as a value.
+        if version == "6.7.1":
+            values = re.findall("System</td>|<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>[A-Za-z0-9].*</p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>", short_data)
+        else: 
+            values = re.findall("<p>.*\r\n.*</p>\r\n.*<p><b>Note</b>.*\r\n.*</p>|<p>.*<\/p>|<p>.*\n.*</p>|<p>.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*</p>|<p>.*\n.*\n.*\n.*\n.*</p>|AD.Server.</td>\n.*</tr>", short_data)
         if version == "6.3.1":
             values.insert(3, "<p>In AD User Discovery, the Last Login Value was incorrect if the user was not set (did not log in) to the AD Server.</p>")
         cleaned_values = list()
